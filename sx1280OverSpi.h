@@ -275,7 +275,9 @@
 class sx1280OverSpi{
 
   public:
-    sx1280OverSpi( );
+    sx1280OverSpi( uint8_t cssPin, 
+                   uint8_t busyPin, 
+                   uint8_t resetPin );
     void begin( );
     void sx1280Select( );
     void sx1280Deselect( );
