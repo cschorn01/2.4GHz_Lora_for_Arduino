@@ -3,7 +3,7 @@
 
 sx1280OverSpi sx1280_1( 13,   // uint8_t cssPin
                         22,   // uint8_t busyPin
-                        9 ); // uint8_t resetPin 
+                        21 ); // uint8_t resetPin 
 
 void setup( ) {
 
