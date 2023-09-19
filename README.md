@@ -1,8 +1,8 @@
 # 2.4GHz_LoRa_for_Arduino
 
-[![By Chris Schorn](https://img.shields.io/badge/Author-Chris_Schorn-000000?style=for-the-badge)](https://github.com/cschorn01)
-![Status](https://img.shields.io/badge/Status-Untested-000000?style=for-the-badge)
-[![Download Repository Zip](https://img.shields.io/badge/Download_Repository_Zip-000000?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/archive/refs/heads/main.zip)
+[![By Chris Schorn](https://img.shields.io/badge/Author-Chris_Schorn-FFFFFF?style=for-the-badge)](https://github.com/cschorn01)
+![Status](https://img.shields.io/badge/Status-Untested-FFFFFF?style=for-the-badge)
+[![Download Repository Zip](https://img.shields.io/badge/Download_Repository_Zip-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/archive/refs/heads/main.zip)
 
 ![Arduino](https://img.shields.io/badge/-Arduino-00979D?style=for-the-badge&logo=Arduino&logoColor=white)
 <!-- [![MIT License](https://img.shields.io/badge/License-MIT-A31B34?style=for-the-badge)](https://mit-license.org/)
@@ -11,11 +11,11 @@
 [![Semtech LoRa](https://img.shields.io/badge/LoRa-1CAEED?style=for-the-badge)](https://www.semtech.com/lora)
 [![FreeRTOS](https://img.shields.io/badge/FreeRTOS-5CBA5B?style=for-the-badge)](https://www.freertos.org/) -->
 
-[![Description](https://img.shields.io/badge/Description-000000?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#description)
-[![Functionality](https://img.shields.io/badge/Functionality-000000?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#functionality)
-[![File Structure](https://img.shields.io/badge/file_structure-000000?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#file-structure)
-[![How to Use](https://img.shields.io/badge/how_to_use-000000?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#how-to-use)
-[![Fixed Issues](https://img.shields.io/badge/fixed_issues-000000?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/blob/main/README.md#fixed-issues)
+[![Description](https://img.shields.io/badge/Description-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#description)
+[![Functionality](https://img.shields.io/badge/Functionality-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#functionality)
+[![File Structure](https://img.shields.io/badge/file_structure-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#file-structure)
+[![How to Use](https://img.shields.io/badge/how_to_use-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#how-to-use)
+[![Fixed Issues](https://img.shields.io/badge/fixed_issues-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/blob/main/README.md#fixed-issues)
 
 [![Stargazers repo roster for @cschorn01/4GHz_Lora_for_Arduino](https://reporoster.com/stars/cschorn01/2.4GHz_Lora_for_Arduino)](https://github.com/cschorn01/4GHz_Lora_for_Arduino/stargazers)
 
