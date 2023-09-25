@@ -36,7 +36,7 @@ This is a library meant for the Arduino IDE. It is based on the code from my [rp
 ## How To Use
 
 
-## Fixed Issues
+## Issues
 
 <!-- ![Error](https://img.shields.io/badge/Error-A31B34?style=for-the-badge) `arm-none-eabi-gcc: fatal error: cannot read spec file 'nosys.specs': No such file or directory`
 
