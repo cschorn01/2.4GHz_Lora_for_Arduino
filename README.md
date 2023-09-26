@@ -4,12 +4,7 @@
 ![Status](https://img.shields.io/badge/Status-Working-FFFFFF?style=for-the-badge)
 [![Download Repository Zip](https://img.shields.io/badge/Download_Repository_Zip-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/archive/refs/heads/main.zip)
 
-![Arduino](https://img.shields.io/badge/-Arduino-00979D?style=for-the-badge&logo=Arduino&logoColor=white)
-<!-- [![MIT License](https://img.shields.io/badge/License-MIT-A31B34?style=for-the-badge)](https://mit-license.org/)
-[![CMake](https://img.shields.io/badge/CMake-%23008FBA.svg?style=for-the-badge&logo=cmake&logoColor=white)](https://cmake.org/)
-[![Raspberry Pi](https://img.shields.io/badge/-RaspberryPi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)](https://www.raspberrypi.com/products/raspberry-pi-pico/)
-[![Semtech LoRa](https://img.shields.io/badge/LoRa-1CAEED?style=for-the-badge)](https://www.semtech.com/lora)
-[![FreeRTOS](https://img.shields.io/badge/FreeRTOS-5CBA5B?style=for-the-badge)](https://www.freertos.org/) -->
+[![Arduino](https://img.shields.io/badge/-Arduino-00979D?style=for-the-badge&logo=Arduino&logoColor=white)](https://www.arduino.cc/)
 
 [![Description](https://img.shields.io/badge/Description-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#description)
 [![Functionality](https://img.shields.io/badge/Functionality-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#functionality)
@@ -24,14 +19,26 @@
 <!-- [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=cschorn01&layout=compact&theme=dark)](https://github.com/cschorn01/Lora_Pico_Driver) -->
 
 ## Description
-This is a library meant for the Arduino IDE. It is based on the code from my [rpi_pico_lora_template](https://github.com/cschorn01/rpi_pico_lora_template/blob/main/README.md), which uses FreeRTOS on the Raspberry Pi Pico to allow for more expandability. However, this library is aimed at hobbyists using either the Pi Pico or any of the other boards supported by the Arduino IDE to expand their long range networking capabilities. The LoRa Modem of choice is the [Semtech sx1280](https://www.semtech.com/products/wireless-rf/lora-connect/sx1280). This gives access to the 2.4GHz spectrum which is useable without a license worldwide, sharing the frequency with [Bluetooth and WiFi](https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/44000000MDcO/Ll4bon.4HPwcyXv9fegcfcgbpvLYd7Lx_aZLMzYNLIQ).
+<!-- This is a library meant for the Arduino IDE. It is based on the code from my [rpi_pico_lora_template](https://github.com/cschorn01/rpi_pico_lora_template/blob/main/README.md), which uses FreeRTOS on the Raspberry Pi Pico to allow for more expandability. However, this library is aimed at hobbyists using either the Pi Pico or any of the other boards supported by the Arduino IDE to expand their long range networking capabilities. The LoRa Modem of choice is the [Semtech sx1280](https://www.semtech.com/products/wireless-rf/lora-connect/sx1280). This gives access to the 2.4GHz spectrum which is useable without a license worldwide, sharing the frequency with [Bluetooth and WiFi](https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/44000000MDcO/Ll4bon.4HPwcyXv9fegcfcgbpvLYd7Lx_aZLMzYNLIQ). -->
+
+This Arduino library alows for streamlined use of the [Semtech sx1280 LoRa Radio](https://www.semtech.com/products/wireless-rf/lora-connect/sx1280) over SPI communication for point to point messaging. Meant to enable hobbyists worldwide by allowing long range radio transmission without license on the 2.4 GHz frequency.
 
 ## Functionality
 
-[LoRa PHY](https://www.semtech.com/lora/what-is-lora) layer functionality is included in this library for ease of point to point messaging. [Click here to download the sx1280 datasheet.](https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/2R000000HoCW/8EVYKPLcthcKCB_cKzApAc6Xf6tAHtn9.UKcOh7SNmg)
+Three functions are made available to use. `sx1280Setup` prepares the sx1280 Lora module for message transmission or reception by setting the message and buffer parameters. `sx1280Tx` sets the sx1280 module parameters for  message transmission, and the IRQ, which will alert the Arduino when the message is sent. `sx1280Rx` sets the sx1280 module parameters for message reception, and the IRQ, which will alert the Arduino if a message is received.
+
+Once a message is transmitted the IRQ will read `0x01`, and when one is received it will fill the array sent to it. 
+<!-- [Click here to download the sx1280 datasheet.](https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/2R000000HoCW/8EVYKPLcthcKCB_cKzApAc6Xf6tAHtn9.UKcOh7SNmg) -->
 
 ## File Structure
 
+- :file_folder: [examples](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main/examples)
+- :file_folder: [src](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main/src) 
+  - :page_facing_up: [sx1280OverSpi.cpp](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/blob/main/src/sx1280OverSpi.cpp)  
+  - :page_facing_up: [sx1280OverSpi.h](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/blob/main/src/sx1280OverSpi.h)
+- :page_facing_up: [README.md](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/blob/main/README.md)  
+- :page_facing_up: [keywords.txt](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/blob/main/keywords.txt)
+- :page_facing_up: [library.properties](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/blob/main/library.properties)
 
 ## How To Use
 
