@@ -26,8 +26,11 @@ This Arduino library alows for streamlined use of the [Semtech sx1280 LoRa Radio
 ## Functionality
 
 Three functions are made available to use:
+
 `sx1280Setup` prepares the sx1280 Lora module for message transmission or reception by setting the message and buffer parameters. 
+
 `sx1280Tx` sets the sx1280 module parameters for  message transmission, and the IRQ, which will alert the Arduino when the message is sent. 
+
 `sx1280Rx` sets the sx1280 module parameters for message reception, and the IRQ, which will alert the Arduino if a message is received.
 
 Once a message is transmitted the IRQ will read `0x01`, and when one is received it will fill the array sent to it. 
