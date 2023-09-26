@@ -1,7 +1,7 @@
 # 2.4GHz_LoRa_for_Arduino
 
 [![By Chris Schorn](https://img.shields.io/badge/Author-Chris_Schorn-FFFFFF?style=for-the-badge)](https://github.com/cschorn01)
-![Status](https://img.shields.io/badge/Status-Untested-FFFFFF?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Working-FFFFFF?style=for-the-badge)
 [![Download Repository Zip](https://img.shields.io/badge/Download_Repository_Zip-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/archive/refs/heads/main.zip)
 
 ![Arduino](https://img.shields.io/badge/-Arduino-00979D?style=for-the-badge&logo=Arduino&logoColor=white)
