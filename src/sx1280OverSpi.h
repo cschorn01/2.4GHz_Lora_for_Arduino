@@ -2,8 +2,8 @@
    Created by Christopher Schorn, August 16, 2023.
    Released into the public domain. */
 
-#ifndef sx1280OverSpi_h
-#define sx1280OverSpi_h
+#ifndef SX1280OVERSPI_H
+#define SX1280OVERSPI_H
 
 #include "Arduino.h"
 
@@ -281,6 +281,7 @@ class sx1280OverSpi{
     void begin( );
     void sx1280Select( );
     void sx1280Deselect( );
+    void sx1280Reset( );
     void sx1280Setup( uint8_t standbyMode, 
                       uint8_t packetType, 
                       uint8_t rfFrequency2316,

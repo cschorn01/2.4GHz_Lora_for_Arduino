@@ -6,8 +6,8 @@
 */
 
 #include "Arduino.h"
-#include "sx1280OverSpi.h"
 #include "SPI.h"
+#include "sx1280OverSpi.h"
 
 sx1280OverSpi::sx1280OverSpi( uint8_t cssPin,   
                               uint8_t busyPin,
@@ -23,9 +23,6 @@ void sx1280OverSpi::begin( ){
     pinMode( sx1280BusyPin, INPUT );
     pinMode( sx1280ResetPin, OUTPUT );
 
-    digitalWrite( sx1280ResetPin, 0 ); /* Resetting sx1280 during startup */
-    asm volatile ("nop \n nop \n nop");
-    digitalWrite( sx1280ResetPin, 1 );
 }
 
 /*  Driving the chip select pin low 
@@ -46,6 +43,13 @@ void sx1280OverSpi::sx1280Deselect(){
      asm volatile ("nop \n nop \n nop");
 }
 
+void sx1280OverSpi::sx1280Reset( ){
+
+    digitalWrite( sx1280ResetPin, 0 ); /* Resetting sx1280 during startup */
+    asm volatile ("nop \n nop \n nop");
+    digitalWrite( sx1280ResetPin, 1 );
+}
+
 /* Function sending common transciever settings to sx1280 */ 
 void sx1280OverSpi::sx1280Setup( uint8_t standbyMode, 
                                  uint8_t packetType, 
@@ -61,22 +65,18 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
                                  uint8_t chirpInvert, 
                                  uint8_t outboundMessage[ ] ){
 
-
     uint8_t *setupWriteData;
     uint32_t payloadLength = 0;
 
     /* Iterator */
     uint32_t i = 0;
 
-    /* Driving pin 21 low to reset the sx1280 */
-    digitalWrite( 21, 0 );
-    asm volatile ("nop \n nop \n nop");
-    digitalWrite( 21, 1 );
+    sx1280Reset( );
 
     /* Waiting till the busy pin is driven low 
        So the sx1280 is not sent a command while busy
             Because it wont receive the command */
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after reset");
     }
@@ -90,7 +90,7 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     sx1280Deselect();
     free( setupWriteData );
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after SETSTANDBY");
     }
@@ -104,7 +104,7 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     sx1280Deselect();
     free( setupWriteData );
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after SETPACKETTYPE");
     }
@@ -120,7 +120,7 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     sx1280Deselect();
     free( setupWriteData );
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after SETRFFREQUENCY");
     }
@@ -136,7 +136,7 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     sx1280Deselect();
     free( setupWriteData );
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after SETBUFFERBASEADDRESS");
     }
@@ -201,7 +201,7 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     sx1280Deselect();
     free( setupWriteData );
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after SETMODULATIONPARAMS");
     }
@@ -229,7 +229,7 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     sx1280Deselect();
     free( setupWriteData );
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after SETPACKETPARAMS");
     }
@@ -283,6 +283,7 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
 
     uint8_t *txWriteData;
     uint32_t txPayloadLength = 0;
+
     /* Iterators */
     uint32_t i = 0;
 
@@ -295,14 +296,16 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
     SPI.transfer( txWriteData, 3*sizeof( uint8_t ) );
     sx1280Deselect();
     free( txWriteData );
+    txWriteData = NULL;
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after SETTXPARAMS");
     }
 
     /* Writing a message to the sx1280 Tx message buffer */
     while( *( outboundMessage + txPayloadLength ) != 0x00 ){
+
         /* Getting size of a single outbound message, storing it in a holder variable */
         txPayloadLength = txPayloadLength + 1;
     }
@@ -313,6 +316,7 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
     *( txWriteData + 1 ) = 0x00;
     /* Looping payloadLength times, writing outboundMessage data to WRITEBUFFER command */
     for( i = 0; i <= txPayloadLength; i++ ){
+
         *( txWriteData + i + 2 ) = *( outboundMessage + i );
         Serial.print("Outbound Message: 0x");
         Serial.println( *( outboundMessage + i ), HEX );
@@ -321,8 +325,9 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
     SPI.transfer( txWriteData, ( txPayloadLength+3 )*sizeof( uint8_t ) );
     sx1280Deselect();
     free( txWriteData );
+    txWriteData = NULL;
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after tx WRITEBUFFER");
     }
@@ -330,20 +335,21 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
     /* setting IRQ parameters for the outgoing message, looping SPI not DIO pins to check*/
     txWriteData = ( uint8_t * ) malloc( 9*sizeof( uint8_t ) );
     *( txWriteData ) = SETDIOIRQPARAMS;
-    *( txWriteData + 1 ) = txIrq158; /* IRQ Mask for bits 15:8 of IRQ register */
-    *( txWriteData + 2 ) = txIrq70; /* IRQ Mask for bits 7:0 of IRQ register */
-    *( txWriteData + 3 ) = 0x00; /* setting DIO 1 Mask bits 15:8 to 0 */
-    *( txWriteData + 4 ) = 0x00; /* setting DIO 1 Mask bits 7:0 to 0 */
-    *( txWriteData + 5 ) = 0x00; /* setting DIO 2 Mask bits 15:8 to 0 */
-    *( txWriteData + 6 ) = 0x00; /* setting DIO 2 Mask bits 7:0 to 0 */
-    *( txWriteData + 7 ) = 0x00; /* setting DIO 3 Mask bits 15:8 to 0 */
-    *( txWriteData + 8 ) = 0x00; /* setting DIO 3 Mask bits 7:0 to 0 */
+    *( txWriteData + 1 ) = txIrq158;    /* IRQ Mask for bits 15:8 of IRQ register   */
+    *( txWriteData + 2 ) = txIrq70;     /* IRQ Mask for bits 7:0 of IRQ register    */
+    *( txWriteData + 3 ) = 0x00;        /* setting DIO 1 Mask bits 15:8 to 0        */
+    *( txWriteData + 4 ) = 0x00;        /* setting DIO 1 Mask bits 7:0 to 0         */
+    *( txWriteData + 5 ) = 0x00;        /* setting DIO 2 Mask bits 15:8 to 0        */
+    *( txWriteData + 6 ) = 0x00;        /* setting DIO 2 Mask bits 7:0 to 0         */
+    *( txWriteData + 7 ) = 0x00;        /* setting DIO 3 Mask bits 15:8 to 0        */
+    *( txWriteData + 8 ) = 0x00;        /* setting DIO 3 Mask bits 7:0 to 0         */
     sx1280Select();
     SPI.transfer( txWriteData, 9*sizeof( uint8_t ) );
     sx1280Deselect();
     free( txWriteData );
+    txWriteData = NULL;
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after tx SETDIOIRQPARAMS");
     }
@@ -352,15 +358,16 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
        Timeout is periodBase * periodBaseCount */
     txWriteData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
     *( txWriteData ) = SETTX;
-    *( txWriteData + 1 ) = txPeriodBase; /* setting periodBase, RTC step */
-    *( txWriteData + 2 ) = txPeriodBaseCount158; /* setting periodBaseCount[15:8] */
-    *( txWriteData + 3 ) = txPeriodBaseCount70; /* setting periodBaseCount[8:0] */
+    *( txWriteData + 1 ) = txPeriodBase;            /* setting periodBase, RTC step         */
+    *( txWriteData + 2 ) = txPeriodBaseCount158;    /* setting periodBaseCount bits 15 to 8 */
+    *( txWriteData + 3 ) = txPeriodBaseCount70;     /* setting periodBaseCount bits 8 to 0  */
     sx1280Select();
     SPI.transfer( txWriteData, 4*sizeof( uint8_t ) );
     sx1280Deselect();
     free( txWriteData );
+    txWriteData = NULL;
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after tx SETTX");
     }
@@ -369,6 +376,7 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
     for( i = 0; i <= 100; i++){
 
         free( txWriteData );
+        txWriteData = NULL;
         delay( 50 );
 
         txWriteData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
@@ -380,12 +388,12 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
         SPI.transfer( txWriteData, 4*sizeof( uint8_t ) );
         sx1280Deselect();
  
-        while( gpio_get( sx1280BusyPin ) == 1 ){
+        while( digitalRead( sx1280BusyPin ) == 1 ){
             delay( 10 );
-            Serial.print("Busy after tx GETIRQSTATUS");
+            Serial.println("Busy after tx GETIRQSTATUS");
         }
 
-        Serial.print("IRQ Check: 0x");
+        Serial.print("Outbound IRQ Check: 0x");
         Serial.print( *( txWriteData + 3 ), HEX );
         Serial.print(" ");
         Serial.println( i, DEC );
@@ -396,16 +404,19 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
             Bits [15:8] would be in  *( readData + 4 ) */
         if( *( txWriteData + 3 ) != 0x00 ){ /* GETIRQSTATUS TxDone == 1 */
 
-            Serial.print("IRQ: 0x  ");
+            Serial.print("Outbound IRQ: 0x");
             Serial.print( *( txWriteData + 3 ), HEX);
             Serial.print(" ");
             Serial.println( i, DEC );
             free( txWriteData );
+            txWriteData = NULL;
             break;
         }
     }
 
-    free( txWriteData );
+    if( txWriteData != NULL ){
+        free( txWriteData );
+    }
 
     /* Clearing the IRQ register, reseting IRQ Mask bits to 0 */
     txWriteData = ( uint8_t * ) malloc( 3*sizeof( uint8_t ) );
@@ -416,8 +427,9 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
     SPI.transfer( txWriteData,  3*sizeof( uint8_t ) );
     sx1280Deselect();
     free( txWriteData );
+    txWriteData = NULL;
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after tx CLRIRQSTATUS");
     }
@@ -430,8 +442,9 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
     SPI.transfer( txWriteData,  2*sizeof( uint8_t ) );
     sx1280Deselect();
     free( txWriteData );
+    txWriteData = NULL;
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after tx SETSTANDBY");
     }
@@ -454,25 +467,25 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
 
     uint32_t totalSizeOfMessage = 0;
     uint32_t sizeOfMessageInBuffer = 0;
-    
 
     /* setting IRQ parameters for Rx mode */
     writeData = ( uint8_t * ) malloc( 9*sizeof( uint8_t ) );
     *( writeData ) = SETDIOIRQPARAMS;
-    *( writeData + 1 ) = rxIrq158; /* IRQ Mask for bits 15:8 of IRQ register */
-    *( writeData + 2 ) = rxIrq70; /* IRQ Mask for bits 7:0 of IRQ register */ 
-    *( writeData + 3 ) = 0x00; /* setting DIO 1 Mask bits 15:8 to 0 */
-    *( writeData + 4 ) = 0x00; /* setting DIO 1 Mask bits 7:0 to 0 */
-    *( writeData + 5 ) = 0x00; /* setting DIO 2 Mask bits 15:8 to 0 */
-    *( writeData + 6 ) = 0x00; /* setting DIO 2 Mask bits 7:0 to 0 */
-    *( writeData + 7 ) = 0x00; /* setting DIO 3 Mask bits 15:8 to 0 */
-    *( writeData + 8 ) = 0x00; /* setting DIO 3 Mask bits 7:0 to 0 */
+    *( writeData + 1 ) = rxIrq158;  /* IRQ Mask for bits 15:8 of IRQ register */
+    *( writeData + 2 ) = rxIrq70;   /* IRQ Mask for bits 7:0 of IRQ register */ 
+    *( writeData + 3 ) = 0x00;      /* setting DIO 1 Mask bits 15:8 to 0 */
+    *( writeData + 4 ) = 0x00;      /* setting DIO 1 Mask bits 7:0 to 0 */
+    *( writeData + 5 ) = 0x00;      /* setting DIO 2 Mask bits 15:8 to 0 */
+    *( writeData + 6 ) = 0x00;      /* setting DIO 2 Mask bits 7:0 to 0 */
+    *( writeData + 7 ) = 0x00;      /* setting DIO 3 Mask bits 15:8 to 0 */
+    *( writeData + 8 ) = 0x00;      /* setting DIO 3 Mask bits 7:0 to 0 */
     sx1280Select();
     SPI.transfer( writeData, 9*sizeof( uint8_t ) );
     sx1280Deselect();
     free( writeData );
+    writeData = NULL;
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after rx SETDIOIRQPARAMS");
     }
@@ -481,22 +494,23 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
        Setting Rx mode to continuous, so multiple messages can be received */
     writeData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
     *( writeData ) = SETRX;
-    *( writeData + 1 ) = rxPeriodBase; /* Setting the RTC step */
-    *( writeData + 2 ) = rxPeriodBaseCount158; /* perdiodBase[15:8] for rx */
-    *( writeData + 3 ) = rxPeriodBaseCount70; /* perdiodBase[7:0] for rx */
+    *( writeData + 1 ) = rxPeriodBase;          /* Setting the RTC step         */
+    *( writeData + 2 ) = rxPeriodBaseCount158;  /* perdiodBase[15:8] for rx     */
+    *( writeData + 3 ) = rxPeriodBaseCount70;   /* perdiodBase[7:0] for rx      */
     sx1280Select();
     SPI.transfer( writeData, 4*sizeof( uint8_t ) );
     sx1280Deselect();
     free( writeData );
+    writeData = NULL;
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after SETRX");
     }
 
     /* Loop polling 100 times over rx mode
        Each loop has a 50 clock-tick delay allowing other tasks to run */
-    for( i = 0; i <= 100; i++ ){ 
+    for( i = 0; i <= 25; i++ ){ 
 
         Serial.print("Listening: ");
         Serial.println( i, DEC );
@@ -506,8 +520,8 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
         writeData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
         *( writeData ) = GETIRQSTATUS;
         *( writeData + 1 ) = 0x00;
-        *( writeData + 2 ) = 0x00;
-        *( writeData + 3 ) = 0x00;
+        *( writeData + 2 ) = 0x00;  /* IRQ bits 15 to 8 returned    */
+        *( writeData + 3 ) = 0x00;  /* IRQ bits 7 to 0 returned     */
         sx1280Select();
         SPI.transfer( writeData, 4*sizeof( uint8_t ) );
         sx1280Deselect();
@@ -516,8 +530,9 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
         if( ( *( writeData + 3 ) & 0x02 ) == 0x02 ){ /* GETIRQSTATUS RxDone == 1 */
  
             free( writeData );
+            writeData = NULL;
 
-            while( gpio_get( sx1280BusyPin ) == 1 ){
+            while( digitalRead( sx1280BusyPin ) == 1 ){
                 delay( 10 );
                 Serial.println("Busy after rx GETIRQSTATUS");
             }
@@ -539,8 +554,9 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
             SPI.transfer( writeData, 7*sizeof( uint8_t ) );
             sx1280Deselect();
             free( writeData );
+            writeData = NULL;
 
-            while( gpio_get( sx1280BusyPin ) == 1 ){
+            while( digitalRead( sx1280BusyPin ) == 1 ){
                 delay( 10 );
                 Serial.println("Busy after rx GETPACKETSTATUS");
             }
@@ -555,8 +571,9 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
             SPI.transfer( writeData, 3*sizeof( uint8_t ) );
             sx1280Deselect();
             free( writeData );
+            writeData = NULL;
 
-            while( gpio_get( sx1280BusyPin ) == 1 ){
+            while( digitalRead( sx1280BusyPin ) == 1 ){
                 delay( 10 );
                 Serial.println("Busy after rx CLRIRQSTATUS");
             }
@@ -575,8 +592,9 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
             /* Grabbing message size for correct memory allocation for incoming message */
             sizeOfMessageInBuffer = *( writeData + 2 );
             free( writeData );
+            writeData = NULL;
 
-            while( gpio_get( sx1280BusyPin ) == 1 ){
+            while( digitalRead( sx1280BusyPin ) == 1 ){
                 delay( 10 );
                 Serial.println("Busy after rx READREGISTER");
             }
@@ -604,8 +622,9 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
                 inboundMessage[ j ] = *( writeData + j );
             }
             free( writeData );
+            writeData = NULL;
 
-            while( gpio_get( sx1280BusyPin ) == 1 ){
+            while( digitalRead( sx1280BusyPin ) == 1 ){
                 delay( 10 );
                 Serial.println("Busy after rx READBUFFER");
             }
@@ -621,8 +640,9 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
     SPI.transfer( writeData, 2*sizeof( uint8_t ) );
     sx1280Deselect();
     free( writeData );
+    writeData = NULL;
 
-    while( gpio_get( sx1280BusyPin ) == 1 ){
+    while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
         Serial.println("Busy after rx SETSTANDBY");
     }
