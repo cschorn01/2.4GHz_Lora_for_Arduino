@@ -45,6 +45,7 @@ Three functions are made available to use:
 
 ## How To Use
 
+Each of the functions contain print outs for the serial monitor. In `sx1280Setup` you will only see the busy status of the sx1280. `sx1280Rx` prints its *Listening* loop iteration, then breaks and fills the arrays passed in with any received message data. `sx1280Tx` prints the IRQ, which if it equals `0x01` the message is sent and the function is exited. If you want to input your own messages you can change the lines which fill the writeData array with 'hi', to input over the serial monitor, which will be added in the examples soon.
 
 ## Issues
 
