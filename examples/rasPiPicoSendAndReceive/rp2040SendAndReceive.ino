@@ -1,7 +1,9 @@
 /* Author: Chris Schorn
    Version: 1.0.0
    Description: Arduino library example for the Raspberry Pi Pico to interface with an 
-                sx1280, or 2.4GHz LoRa Module.
+                sx1280, or 2.4GHz LoRa Module. The module I have chosen is a
+                DLP-RFS1280 from DLP-Design.
+
    Useful Links: https://arduino-pico.readthedocs.io/en/latest/spi.html
                  https://www.arduino.cc/reference/en/language/functions/communication/spi/
 */
@@ -15,18 +17,25 @@ sx1280OverSpi sx1280_1( 13,   // uint8_t cssPin
 
 // Arrays for passing data to and receiving data from sx1280 setup, rx, and tx functions
 uint8_t writeData[ 255 ];
-uint8_t readData[ 255 ];
+uint8_t readData[ 255 ]
+
+uint8_t LED_PIN = 25; // Setting variable for the Rpi Pico onboard LED
+
+uint8_t antselPin = 28; // Setting variable for DLP-RFS1280 antenna select pin
 
 uint32_t i = 0; // iterator
 
 void setup( ) {
 
-    pinMode( 25, OUTPUT);
+    pinMode( LED_PIN, OUTPUT);
+
+    pinMode( antselPin, OUTPUT );
+    digitalWrite( antselPin, LOW );
 
     // bool setCS(pin_size_t pin); choosing to handle the CS pin in the library
-    SPI.setSCK( 10 );// bool setSCK(pin_size_t pin);
-    SPI.setTX( 11 );// bool setTX(pin_size_t pin);
-    SPI.setRX( 12 );// bool setRX(pin_size_t pin);
+    SPI.setSCK( 10 ); // bool setSCK(pin_size_t pin);
+    SPI.setTX( 11 );  // bool setTX(pin_size_t pin);
+    SPI.setRX( 12 );  // bool setRX(pin_size_t pin);
     SPI.begin( );
 
     sx1280_1.begin( );
@@ -43,7 +52,7 @@ void loop() {
     for( i = 0; i < 255; i++){
         *( writeData + i ) = 0xFF;
     }
-    writeData[ 254 ] = 0x00;
+    writeData[ 254 ] = 0x00; // Ending the array with a NULL for a NULL terminated string
 
     for( i = 0; i < 255; i++){
         *( readData + i ) = 0xFF;

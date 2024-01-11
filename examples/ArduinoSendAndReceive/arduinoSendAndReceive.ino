@@ -1,7 +1,8 @@
 /* Author: Chris Schorn
    Version: 1.0.0
-   Description: Arduino library example for the Raspberry Pi Pico to interface with an 
-                sx1280, or 2.4GHz LoRa Module.
+   Description: Arduino library example for the Arduino Uno to interface with an 
+                sx1280, or 2.4GHz LoRa Module. The module I have chosen is a
+                DLP-RFS1280 from DLP-Design.
 */
 
 #include <SPI.h>
@@ -15,12 +16,17 @@ sx1280OverSpi sx1280_1( 10,   // uint8_t cssPin
 uint8_t writeData[ 255 ];
 uint8_t readData[ 255 ];
 
+uint8_t antselPin = 9; // Setting variable for DLP-RFS1280 antenna select pin
+ 
 uint32_t i = 0; // iterator
 
 void setup( ) {
     Serial.begin(115200);
 
     pinMode( LED_BUILTIN, OUTPUT);
+
+    pinMode( antselPin, OUTPUT );
+    digitalWrite( antselPin, LOW );
 
     SPI.begin( );
 
