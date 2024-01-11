@@ -48,6 +48,8 @@ Three functions are made available to use:
 
 Each of the functions contain print outs for the serial monitor. In `sx1280Setup` you will only see the busy status of the sx1280. `sx1280Rx` prints its *Listening* loop iteration, then breaks and fills the arrays passed in with any received message data. If there was any message data received then it is printed in `void loop`.  `sx1280Tx` prints the IRQ, which if it equals `0x01` the message is sent and the function is exited. If you want to input your own messages you can change the lines which fill the writeData array with 'hi', to input over the serial monitor, which will be added in the examples soon.
 
+There are two examples to aid in a more thorough understanding. The first is for using an Arduino Uno and the second a Raspberry Pi Pico. In each example an sx1280 module called the [DLP-RFS1280](https://www.dlpdesign.com/rf/rfs1280.php) is used. This module has a built in antenna so there is no need to purchase one. I will soon be coming out with an arduino shield for this product to make it even easier to use.
+
 ## ![Issues](https://img.shields.io/badge/issues-FFFFFF?style=for-the-badge)
 
 <!-- ![Error](https://img.shields.io/badge/Error-A31B34?style=for-the-badge) `arm-none-eabi-gcc: fatal error: cannot read spec file 'nosys.specs': No such file or directory`
