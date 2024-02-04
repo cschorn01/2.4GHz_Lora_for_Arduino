@@ -29,7 +29,7 @@ void sx1280OverSpi::begin( ){
     Transactions with sx1280 start with chip select low */
 void sx1280OverSpi::sx1280Select(){
 
-    asm volatile ("nop \n nop \n nop");/* Find out what it does */
+    asm volatile ("nop \n nop \n nop");
     digitalWrite( sx1280CssPin, 0 );
     asm volatile ("nop \n nop \n nop");
 }
@@ -50,6 +50,14 @@ void sx1280OverSpi::sx1280Reset( ){
     digitalWrite( sx1280ResetPin, 1 );
 }
 
+void sx1280OverSpi::zeroingAnArray( uint8_t arrayToZero[], 
+                                    uint16_t arrayLength ){
+
+    for( uint16_t i = 0; i < arrayLength; i ++ ){
+        arrayToZero[ i ] = 0;
+    }
+}
+
 /* Function sending common transciever settings to sx1280 */ 
 void sx1280OverSpi::sx1280Setup( uint8_t standbyMode, 
                                  uint8_t packetType, 
@@ -65,11 +73,11 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
                                  uint8_t chirpInvert, 
                                  uint8_t outboundMessage[ ] ){
 
-    uint8_t *setupWriteData;
-    uint32_t payloadLength = 0;
+    uint8_t setupWriteData[ 10 ] = { 0 };
+    uint16_t payloadLength = 0;
 
     /* Iterator */
-    uint32_t i = 0;
+    uint16_t i = 0;
 
     sx1280Reset( );
 
@@ -78,39 +86,38 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
             Because it wont receive the command */
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after reset");
+        Serial.println(F("Busy after reset"));
     }
 
     /* Setting sx1280 Standby mode */
-    setupWriteData = ( uint8_t * ) malloc( 2*sizeof( uint8_t ) );
     *( setupWriteData ) = SETSTANDBY;
     *( setupWriteData + 1 ) = standbyMode; /* Setting STDBY_RC Mode 0x01, STDBY_XOSC */
     sx1280Select();
     SPI.transfer( setupWriteData, 2*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( setupWriteData );
+    zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
+                    10 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after SETSTANDBY");
+        Serial.println(F("Busy after SETSTANDBY"));
     }
 
     /* Setting sx1280 Packet Type */
-    setupWriteData = ( uint8_t * ) malloc( 2*sizeof( uint8_t ) );
     *( setupWriteData ) = SETPACKETTYPE;
     *( setupWriteData + 1 ) = packetType;
     sx1280Select();
     SPI.transfer( setupWriteData, 2*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( setupWriteData );
+    zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
+                    10 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after SETPACKETTYPE");
+        Serial.println(F("Busy after SETPACKETTYPE"));
     }
 
     /* Setting RF Frequency */
-    setupWriteData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
     *( setupWriteData ) = SETRFFREQUENCY;
     *( setupWriteData + 1 ) = rfFrequency2316; /* rfFrequency[23:16] */
     *( setupWriteData + 2 ) = rfFrequency158; /* rfFrequency[15:8] */
@@ -118,31 +125,31 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     sx1280Select();
     SPI.transfer( setupWriteData, 4*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( setupWriteData );
+    zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
+                    10 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after SETRFFREQUENCY");
+        Serial.println(F("Busy after SETRFFREQUENCY"));
     }
 
     /* Setting Tx and Rx Buffer Base Addresses
        Putting both at 0 since messages can be size of buffer */
-    setupWriteData = ( uint8_t * ) malloc( 3*sizeof( uint8_t ) );
     *( setupWriteData ) = SETBUFFERBASEADDRESS;
     *( setupWriteData + 1 ) = 0x00;
     *( setupWriteData + 2 ) = 0x00;
     sx1280Select();
     SPI.transfer( setupWriteData, 3*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( setupWriteData );
+    zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
+                    10 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after SETBUFFERBASEADDRESS");
+        Serial.println(F("Busy after SETBUFFERBASEADDRESS"));
     }
 
     /* Setting the Modulation Params */
-    setupWriteData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
     *( setupWriteData ) = SETMODULATIONPARAMS;
     *( setupWriteData + 1 ) = spreadingFactor; /* Spreading Factor */
     *( setupWriteData + 2 ) = bandwidth; /* Bandwidth */
@@ -150,11 +157,12 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     sx1280Select();
     SPI.transfer( setupWriteData, 4*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( setupWriteData );
+    zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
+                    10 );
+
     /* 0x1E Must be written to register 0x0925 for SF5 or SF6 */
     if( spreadingFactor == 0x50 || spreadingFactor == 0x60 ){
 
-        setupWriteData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
         *( setupWriteData ) = WRITEREGISTER;
         *( setupWriteData + 1 ) = 0x09;
         *( setupWriteData + 2 ) = 0x25;
@@ -162,12 +170,13 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
         sx1280Select();
         SPI.transfer( setupWriteData, 4*sizeof( uint8_t ) );
         sx1280Deselect();
-        free( setupWriteData );
+        zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
+                        10 );
+
     }
     /* 0x37 Must be written to register 0x0925 for SF7 or SF8 */
     else if( spreadingFactor == 0x70 || spreadingFactor == 0x80 ){
 
-        setupWriteData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
         *( setupWriteData ) = WRITEREGISTER;
         *( setupWriteData + 1 ) = 0x09;
         *( setupWriteData + 2 ) = 0x25;
@@ -175,12 +184,13 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
         sx1280Select();
         SPI.transfer( setupWriteData, 4*sizeof( uint8_t ) );
         sx1280Deselect();
-        free( setupWriteData );
+        zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
+                        10 );
+
     }
     /* 0x32 Must be written to register 0x0925 for SF9, SF10, SF11, or SF12 */
     else if( spreadingFactor == 0x90 || spreadingFactor == 0xA0 || spreadingFactor == 0xB0 || spreadingFactor == 0xC0 ){
         
-        setupWriteData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
         *( setupWriteData ) = WRITEREGISTER;
         *( setupWriteData + 1 ) = 0x09;
         *( setupWriteData + 2 ) = 0x25;
@@ -188,10 +198,11 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
         sx1280Select();
         SPI.transfer( setupWriteData, 4*sizeof( uint8_t ) );
         sx1280Deselect();
-        free( setupWriteData );
+        zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
+                        10 );
+
     }
     /* 0x01 must be written to register 0x093C */
-    setupWriteData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
     *( setupWriteData ) = WRITEREGISTER;
     *( setupWriteData + 1 ) = 0x09;
     *( setupWriteData + 2 ) = 0x3C;
@@ -199,11 +210,12 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     sx1280Select();
     SPI.transfer( setupWriteData, 4*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( setupWriteData );
+    zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
+                    10 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after SETMODULATIONPARAMS");
+        Serial.println(F("Busy after SETMODULATIONPARAMS"));
     }
 
     /* Setting Packet Params */
@@ -215,7 +227,6 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
         }
         payloadLength = payloadLength + 1;
     }
-    setupWriteData = ( uint8_t * ) malloc( 8*sizeof( uint8_t ) );
     *( setupWriteData ) = SETPACKETPARAMS;
     *( setupWriteData + 1 ) = preambleLength; /* Preamble Length */
     *( setupWriteData + 2 ) = headerType; /* Header Type */
@@ -227,11 +238,12 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     sx1280Select();
     SPI.transfer( setupWriteData, 8*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( setupWriteData );
+    zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
+                    10 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after SETPACKETPARAMS");
+        Serial.println(F("Busy after SETPACKETPARAMS"));
     }
 
     /* Testing connecting from pico to sx1280 by writing to and reading from buffer
@@ -241,19 +253,18 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
         setupReadData[i] = 0;
     }
 
-    writeData = ( uint8_t * ) malloc( 3*sizeof( uint8_t ) );
     *( writeData ) = WRITEBUFFER;
     *( writeData + 1 ) = 0x00;
     *( writeData + 2 ) = 0xFF;
     sx1280Select();
     SPI.transfer( setupWriteData, 3*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( writeData ); */
+    zeroingAnArray( setupWriteData, // Reassigning all array values to 0
+                    10 ); */
 
     /* Must use two NOP's for reads because data is
             returned beginning on the second NOP */
-    /* writeData = ( uint8_t * ) malloc( 5*sizeof( uint8_t ) );
-    *( writeData ) = READBUFFER;
+    /* *( writeData ) = READBUFFER;
     *( writeData + 1 ) = 0x00;
     *( writeData + 2 ) = 0x00;
     *( writeData + 3 ) = 0x00;
@@ -266,7 +277,9 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
     Serial.print( *( readData + 2 ) );
     Serial.print( *( readData + 3 ) );
     Serial.print( *( readData + 4 ) );
-    free( writeData ); */
+    zeroingAnArray( setupWriteData, 
+                    10 );
+*/
 
 }
 
@@ -281,59 +294,61 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
                               uint8_t txPeriodBaseCount158, 
                               uint8_t txPeriodBaseCount70 ){
 
-    uint8_t *txWriteData;
-    uint32_t txPayloadLength = 0;
+    uint8_t txWriteData[ 258 ] = { 0 }; /* Size is 258 cause message buffer + opcode + offset */
+    uint16_t txPayloadLength = 0;
 
     /* Iterators */
-    uint32_t i = 0;
+    uint16_t i = 0;
 
     /* Setting the tx parameters necessary for sending a message */
-    txWriteData = ( uint8_t * ) malloc( 3*sizeof( uint8_t ) );
     *( txWriteData ) = SETTXPARAMS;
     *( txWriteData + 1 ) = power;    /* power       */
     *( txWriteData + 2 ) = rampTime; /* rampTime    */
     sx1280Select();
     SPI.transfer( txWriteData, 3*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( txWriteData );
-    txWriteData = NULL;
+    zeroingAnArray( txWriteData, /* Reassigning all array values to 0 */
+                    258 );
+
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after SETTXPARAMS");
+        Serial.println(F("Busy after SETTXPARAMS"));
     }
 
     /* Writing a message to the sx1280 Tx message buffer */
     while( *( outboundMessage + txPayloadLength ) != 0x00 ){
 
         /* Getting size of a single outbound message, storing it in a holder variable */
+        if( txPayloadLength > 255 ){
+            txPayloadLength = 255;
+        }
         txPayloadLength = txPayloadLength + 1;
     }
     /* Allocating txPayloadLength+3 bytes to writeData, payloadLength is indexed from zero
-            and space is needed for the WRITEBUFFER command and nop */
-    txWriteData = ( uint8_t * )malloc( ( txPayloadLength+3 )*sizeof( uint8_t ) );
+            and space is needed for the WRITEBUFFER command and nop
+    txWriteData = ( uint8_t * )malloc( ( txPayloadLength+3 )*sizeof( uint8_t ) ); */
     *( txWriteData ) = WRITEBUFFER;
     *( txWriteData + 1 ) = 0x00;
     /* Looping payloadLength times, writing outboundMessage data to WRITEBUFFER command */
     for( i = 0; i <= txPayloadLength; i++ ){
 
         *( txWriteData + i + 2 ) = *( outboundMessage + i );
-        Serial.print("Outbound Message: 0x");
+        Serial.print(F("Outbound Message: 0x"));
         Serial.println( *( outboundMessage + i ), HEX );
     }
     sx1280Select();
     SPI.transfer( txWriteData, ( txPayloadLength+3 )*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( txWriteData );
-    txWriteData = NULL;
+    zeroingAnArray( txWriteData, /* Reassigning all array values to 0 */
+                    258 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after tx WRITEBUFFER");
+        Serial.println(F("Busy after tx WRITEBUFFER"));
     }
 
     /* setting IRQ parameters for the outgoing message, looping SPI not DIO pins to check*/
-    txWriteData = ( uint8_t * ) malloc( 9*sizeof( uint8_t ) );
     *( txWriteData ) = SETDIOIRQPARAMS;
     *( txWriteData + 1 ) = txIrq158;    /* IRQ Mask for bits 15:8 of IRQ register   */
     *( txWriteData + 2 ) = txIrq70;     /* IRQ Mask for bits 7:0 of IRQ register    */
@@ -346,17 +361,16 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
     sx1280Select();
     SPI.transfer( txWriteData, 9*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( txWriteData );
-    txWriteData = NULL;
+    zeroingAnArray( txWriteData, /* Reassigning all array values to 0 */
+                    258 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after tx SETDIOIRQPARAMS");
+        Serial.println(F("Busy after tx SETDIOIRQPARAMS"));
     }
 
     /* Putting sx1280 in transmit mode to send the message in sx1280's message buffer 
        Timeout is periodBase * periodBaseCount */
-    txWriteData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
     *( txWriteData ) = SETTX;
     *( txWriteData + 1 ) = txPeriodBase;            /* setting periodBase, RTC step         */
     *( txWriteData + 2 ) = txPeriodBaseCount158;    /* setting periodBaseCount bits 15 to 8 */
@@ -364,38 +378,36 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
     sx1280Select();
     SPI.transfer( txWriteData, 4*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( txWriteData );
-    txWriteData = NULL;
+    zeroingAnArray( txWriteData, /* Reassigning all array values to 0 */
+                    258 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after tx SETTX");
+        Serial.println(F("Busy after tx SETTX"));
     }
 
     /* Looping over GETIRQSTATUS using SPI, till TxDone bit is high */
     for( i = 0; i <= 100; i++){
 
-        free( txWriteData );
-        txWriteData = NULL;
         delay( 50 );
 
-        txWriteData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
         *( txWriteData ) = GETIRQSTATUS;
         *( txWriteData + 1 ) = 0x00;
         *( txWriteData + 2 ) = 0x00;
         *( txWriteData + 3 ) = 0x00;
         sx1280Select();
-        SPI.transfer( txWriteData, 4*sizeof( uint8_t ) );
+        /* Arduino SPI replaces txWriteData with incoming data when size is specified */
+        SPI.transfer( txWriteData, 4*sizeof( uint8_t ) ); 
         sx1280Deselect();
  
         while( digitalRead( sx1280BusyPin ) == 1 ){
             delay( 10 );
-            Serial.println("Busy after tx GETIRQSTATUS");
+            Serial.println(F("Busy after tx GETIRQSTATUS"));
         }
 
-        Serial.print("Outbound IRQ Check: 0x");
+        Serial.print(F("Outbound IRQ Check: 0x"));
         Serial.print( *( txWriteData + 3 ), HEX );
-        Serial.print(" ");
+        Serial.print(F(" "));
         Serial.println( i, DEC );
 
         /* Checking bits [7:0] to see if the TxDone bit in the IRQ register is high
@@ -404,49 +416,45 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
             Bits [15:8] would be in  *( readData + 4 ) */
         if( *( txWriteData + 3 ) != 0x00 ){ /* GETIRQSTATUS TxDone == 1 */
 
-            Serial.print("Outbound IRQ: 0x");
+            Serial.print(F("Outbound IRQ: 0x"));
             Serial.print( *( txWriteData + 3 ), HEX);
-            Serial.print(" ");
+            Serial.print(F(" "));
             Serial.println( i, DEC );
-            free( txWriteData );
-            txWriteData = NULL;
             break;
         }
+
+        zeroingAnArray( txWriteData, /* Reassigning all array values to 0 */
+                        258 );
     }
 
-    if( txWriteData != NULL ){
-        free( txWriteData );
-    }
 
     /* Clearing the IRQ register, reseting IRQ Mask bits to 0 */
-    txWriteData = ( uint8_t * ) malloc( 3*sizeof( uint8_t ) );
     *( txWriteData ) = CLRIRQSTATUS;
     *( txWriteData + 1 ) = 0xFF; /* clearing bits 15:8 of IRQ mask */
     *( txWriteData + 2 ) = 0xFF; /* clearing bits 7:0 of IRQ mask */
     sx1280Select();
     SPI.transfer( txWriteData,  3*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( txWriteData );
-    txWriteData = NULL;
+    zeroingAnArray( txWriteData, /* Reassigning all array values to 0 */
+                    258 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after tx CLRIRQSTATUS");
+        Serial.println(F("Busy after tx CLRIRQSTATUS"));
     }
 
     /* Tx SETSANDBY */
-    txWriteData = ( uint8_t * ) malloc( 2*sizeof( uint8_t ) );
     *( txWriteData ) = SETSTANDBY;
     *( txWriteData + 1 ) = 0x00;
     sx1280Select();
     SPI.transfer( txWriteData,  2*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( txWriteData );
-    txWriteData = NULL;
+    zeroingAnArray( txWriteData, /* Reassigning all array values to 0 */
+                    258 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after tx SETSTANDBY");
+        Serial.println(F("Busy after tx SETSTANDBY"));
     }
 }
 
@@ -460,81 +468,78 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
                               uint8_t inboundMessage[ 255 ] ){
 
     /* Iterators */
-    uint32_t i = 0;
-    uint32_t j = 0;
+    uint16_t i = 0;
+    uint16_t j = 0;
 
-    uint8_t *writeData;
+    uint8_t rxWriteData[ 258 ] = { 0 };
 
-    uint32_t totalSizeOfMessage = 0;
-    uint32_t sizeOfMessageInBuffer = 0;
+    uint16_t totalSizeOfMessage = 0;
+    uint16_t sizeOfMessageInBuffer = 0;
 
     /* setting IRQ parameters for Rx mode */
-    writeData = ( uint8_t * ) malloc( 9*sizeof( uint8_t ) );
-    *( writeData ) = SETDIOIRQPARAMS;
-    *( writeData + 1 ) = rxIrq158;  /* IRQ Mask for bits 15:8 of IRQ register */
-    *( writeData + 2 ) = rxIrq70;   /* IRQ Mask for bits 7:0 of IRQ register */ 
-    *( writeData + 3 ) = 0x00;      /* setting DIO 1 Mask bits 15:8 to 0 */
-    *( writeData + 4 ) = 0x00;      /* setting DIO 1 Mask bits 7:0 to 0 */
-    *( writeData + 5 ) = 0x00;      /* setting DIO 2 Mask bits 15:8 to 0 */
-    *( writeData + 6 ) = 0x00;      /* setting DIO 2 Mask bits 7:0 to 0 */
-    *( writeData + 7 ) = 0x00;      /* setting DIO 3 Mask bits 15:8 to 0 */
-    *( writeData + 8 ) = 0x00;      /* setting DIO 3 Mask bits 7:0 to 0 */
+    *( rxWriteData ) = SETDIOIRQPARAMS;
+    *( rxWriteData + 1 ) = rxIrq158;  /* IRQ Mask for bits 15:8 of IRQ register */
+    *( rxWriteData + 2 ) = rxIrq70;   /* IRQ Mask for bits 7:0 of IRQ register */ 
+    *( rxWriteData + 3 ) = 0x00;      /* setting DIO 1 Mask bits 15:8 to 0 */
+    *( rxWriteData + 4 ) = 0x00;      /* setting DIO 1 Mask bits 7:0 to 0 */
+    *( rxWriteData + 5 ) = 0x00;      /* setting DIO 2 Mask bits 15:8 to 0 */
+    *( rxWriteData + 6 ) = 0x00;      /* setting DIO 2 Mask bits 7:0 to 0 */
+    *( rxWriteData + 7 ) = 0x00;      /* setting DIO 3 Mask bits 15:8 to 0 */
+    *( rxWriteData + 8 ) = 0x00;      /* setting DIO 3 Mask bits 7:0 to 0 */
     sx1280Select();
-    SPI.transfer( writeData, 9*sizeof( uint8_t ) );
+    SPI.transfer( rxWriteData, 9*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( writeData );
-    writeData = NULL;
+    zeroingAnArray( rxWriteData, /* Reassigning all array values to 0 */
+                    258 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after rx SETDIOIRQPARAMS");
+        Serial.println(F("Busy after rx SETDIOIRQPARAMS"));
     }
 
     /* setting sx1280 to Rx mode
        Setting Rx mode to continuous, so multiple messages can be received */
-    writeData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
-    *( writeData ) = SETRX;
-    *( writeData + 1 ) = rxPeriodBase;          /* Setting the RTC step         */
-    *( writeData + 2 ) = rxPeriodBaseCount158;  /* perdiodBase[15:8] for rx     */
-    *( writeData + 3 ) = rxPeriodBaseCount70;   /* perdiodBase[7:0] for rx      */
+    *( rxWriteData ) = SETRX;
+    *( rxWriteData + 1 ) = rxPeriodBase;          /* Setting the RTC step         */
+    *( rxWriteData + 2 ) = rxPeriodBaseCount158;  /* perdiodBase[15:8] for rx     */
+    *( rxWriteData + 3 ) = rxPeriodBaseCount70;   /* perdiodBase[7:0] for rx      */
     sx1280Select();
-    SPI.transfer( writeData, 4*sizeof( uint8_t ) );
+    SPI.transfer( rxWriteData, 4*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( writeData );
-    writeData = NULL;
+    zeroingAnArray( rxWriteData, /* Reassigning all array values to 0 */
+                    258 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after SETRX");
+        Serial.println(F("Busy after SETRX"));
     }
 
-    /* Loop polling 100 times over rx mode
-       Each loop has a 50 clock-tick delay allowing other tasks to run */
+    /* Loop pollingi 25 times over rx mode
+       Each loop has a 50 millisecond delay allowing other tasks to run */
     for( i = 0; i <= 25; i++ ){ 
 
-        Serial.print("Listening: ");
+        Serial.print(F("Listening: "));
         Serial.println( i, DEC );
         sizeOfMessageInBuffer = 0;
 
         /* Using GETIRQSTATUS to check if there is a new message in the rx buffer */
-        writeData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
-        *( writeData ) = GETIRQSTATUS;
-        *( writeData + 1 ) = 0x00;
-        *( writeData + 2 ) = 0x00;  /* IRQ bits 15 to 8 returned    */
-        *( writeData + 3 ) = 0x00;  /* IRQ bits 7 to 0 returned     */
+        *( rxWriteData ) = GETIRQSTATUS;
+        *( rxWriteData + 1 ) = 0x00;
+        *( rxWriteData + 2 ) = 0x00;  /* IRQ bits 15 to 8 returned    */
+        *( rxWriteData + 3 ) = 0x00;  /* IRQ bits 7 to 0 returned     */
         sx1280Select();
-        SPI.transfer( writeData, 4*sizeof( uint8_t ) );
+        SPI.transfer( rxWriteData, 4*sizeof( uint8_t ) );
         sx1280Deselect();
 
         /* Checking to see if the RxDone bit in the IRQ register is high, with 0x02 bitmask */
-        if( ( *( writeData + 3 ) & 0x02 ) == 0x02 ){ /* GETIRQSTATUS RxDone == 1 */
- 
-            free( writeData );
-            writeData = NULL;
+        if( ( *( rxWriteData + 3 ) & 0x02 ) == 0x02 ){ /* GETIRQSTATUS RxDone == 1 */
+
+            zeroingAnArray( rxWriteData, /* Reassigning all array values to 0 */
+                            258 );
 
             while( digitalRead( sx1280BusyPin ) == 1 ){
                 delay( 10 );
-                Serial.println("Busy after rx GETIRQSTATUS");
+                Serial.println(F("Busy after rx GETIRQSTATUS"));
             }
 
             /* see what the message is and decide what to do with it */
@@ -542,108 +547,104 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
             /* using GETPACKETSTATUS which returns rssiSync, and Signal to Noise Ratio ( SNR )
                Not currently using but it's in sx1280 Documentation for Rx operation
                     pretty sure it's used to see if the received message is useable or not */
-            writeData = ( uint8_t * ) malloc( 7*sizeof( uint8_t ) );
-            *( writeData ) = GETPACKETSTATUS;
-            *( writeData + 1 ) = 0x00;
-            *( writeData + 2 ) = 0x00;
-            *( writeData + 3 ) = 0x00;
-            *( writeData + 4 ) = 0x00;
-            *( writeData + 5 ) = 0x00;
-            *( writeData + 6 ) = 0x00;
+            *( rxWriteData ) = GETPACKETSTATUS;
+            *( rxWriteData + 1 ) = 0x00;
+            *( rxWriteData + 2 ) = 0x00;
+            *( rxWriteData + 3 ) = 0x00;
+            *( rxWriteData + 4 ) = 0x00;
+            *( rxWriteData + 5 ) = 0x00;
+            *( rxWriteData + 6 ) = 0x00;
             sx1280Select();
-            SPI.transfer( writeData, 7*sizeof( uint8_t ) );
+            SPI.transfer( rxWriteData, 7*sizeof( uint8_t ) );
             sx1280Deselect();
-            free( writeData );
-            writeData = NULL;
+            zeroingAnArray( rxWriteData, /* Reassigning all array values to 0 */
+                            258 );
 
             while( digitalRead( sx1280BusyPin ) == 1 ){
                 delay( 10 );
-                Serial.println("Busy after rx GETPACKETSTATUS");
+                Serial.println(F("Busy after rx GETPACKETSTATUS"));
             }
 
             /* Clearing the IRQ register on the sx1280
                Not sure why it's done here in the rx operation in sx1280 documentation */
-            writeData = ( uint8_t * ) malloc( 3*sizeof( uint8_t ) );
-            *( writeData ) = CLRIRQSTATUS;
-            *( writeData + 1 ) = 0xFF;
-            *( writeData + 2 ) = 0xFF;
+            *( rxWriteData ) = CLRIRQSTATUS;
+            *( rxWriteData + 1 ) = 0xFF;
+            *( rxWriteData + 2 ) = 0xFF;
             sx1280Select();
-            SPI.transfer( writeData, 3*sizeof( uint8_t ) );
+            SPI.transfer( rxWriteData, 3*sizeof( uint8_t ) );
             sx1280Deselect();
-            free( writeData );
-            writeData = NULL;
+            zeroingAnArray( rxWriteData, /* Reassigning all array values to 0 */
+                            258 );
 
             while( digitalRead( sx1280BusyPin ) == 1 ){
                 delay( 10 );
-                Serial.println("Busy after rx CLRIRQSTATUS");
+                Serial.println(F("Busy after rx CLRIRQSTATUS"));
             }
 
             /* Getting the length of the newly received message
                GETRXBUFFERSTATUS only works for LORA messages with headers, 
                     otherwise read register 0x0901 */
-            writeData = ( uint8_t * ) malloc( 4*sizeof( uint8_t ) );
-            *( writeData ) = GETRXBUFFERSTATUS; 
-            *( writeData + 1 ) = 0x00;
-            *( writeData + 2 ) = 0x00;
-            *( writeData + 3 ) = 0x00;
+            *( rxWriteData ) = GETRXBUFFERSTATUS; 
+            *( rxWriteData + 1 ) = 0x00;
+            *( rxWriteData + 2 ) = 0x00;
+            *( rxWriteData + 3 ) = 0x00;
             sx1280Select();
-            SPI.transfer( writeData, 4*sizeof( uint8_t ) );
+            SPI.transfer( rxWriteData, 4*sizeof( uint8_t ) );
             sx1280Deselect();
             /* Grabbing message size for correct memory allocation for incoming message */
-            sizeOfMessageInBuffer = *( writeData + 2 );
-            free( writeData );
-            writeData = NULL;
+            sizeOfMessageInBuffer = *( rxWriteData + 2 );
+            zeroingAnArray( rxWriteData, /* Reassigning all array values to 0 */
+                            258 );
 
             while( digitalRead( sx1280BusyPin ) == 1 ){
                 delay( 10 );
-                Serial.println("Busy after rx READREGISTER");
+                Serial.println(F("Busy after rx READREGISTER"));
             }
 
             /* Reading message buffer of sx1280
                Allocating the size of the message in the sx1280 buffer plus 3 because over 
                     spi you must send an opcode, the buffer offset, and a nop to receive the
                     payload on the buffer */
-            writeData = ( uint8_t * ) malloc( ( sizeOfMessageInBuffer + 3 )*sizeof(uint8_t) );
-            *( writeData ) = READBUFFER;
-            *( writeData + 1 ) = 0x00; /* sx1280 message buffer offset */
-            *( writeData + 2 ) = 0x00; /* sending first nop */
-            /* Looping through rest of writeData to add nops, i begins at *( writeData + 3 ) */
+            // rxWriteData = ( uint8_t * ) malloc( (sizeOfMessageInBuffer + 3)*sizeof(uint8_t));
+            *( rxWriteData ) = READBUFFER;
+            *( rxWriteData + 1 ) = 0x00; /* sx1280 message buffer offset */
+            *( rxWriteData + 2 ) = 0x00; /* sending first nop */
+            /* Looping through rxWriteData to add nops, i begins at *( rxWriteData + 3 ) */
             /* Serial.print("Final Address = 0x"); 
-            Serial.println( *( writeData + sizeOfMessageInBuffer + 3 ), HEX ); */
+            Serial.println( *( rxWriteData + sizeOfMessageInBuffer + 3 ), HEX ); */
             for( j = 0; j <= sizeOfMessageInBuffer; j++){
-                *( writeData + j + 3 ) = 0x00;
-                /* Serial.print("writeData + j = 0x j =  ", ( writeData + j + 3 ), j ); */
+                *( rxWriteData + j + 3 ) = 0x00;
+                /* Serial.print("rxWriteData + j = 0x j =  ", ( rxWriteData + j + 3 ), j ); */
             }
             sx1280Select();
-            SPI.transfer( writeData, ( sizeOfMessageInBuffer + 3 )*sizeof( uint8_t));
+            SPI.transfer( rxWriteData, ( sizeOfMessageInBuffer + 3 )*sizeof( uint8_t));
             sx1280Deselect();
             /* Passing newly received message pointer to vSx1280Task */
             for( j = 0; j <= sizeOfMessageInBuffer; j++ ){
-                inboundMessage[ j ] = *( writeData + j );
+                inboundMessage[ j ] = *( rxWriteData + j );
             }
-            free( writeData );
-            writeData = NULL;
+            zeroingAnArray( rxWriteData, /* Reassigning all array values to 0 */
+                            258 );
 
             while( digitalRead( sx1280BusyPin ) == 1 ){
                 delay( 10 );
-                Serial.println("Busy after rx READBUFFER");
+                Serial.println(F("Busy after rx READBUFFER"));
             }
         }
         delay( 50 ); 
     }
 
     /* Rx SETSANDBY */
-    writeData = ( uint8_t * ) malloc( 2*sizeof( uint8_t ) );
-    *( writeData ) = SETSTANDBY;
-    *( writeData + 1 ) = 0x00;
+    *( rxWriteData ) = SETSTANDBY;
+    *( rxWriteData + 1 ) = 0x00;
     sx1280Select();
-    SPI.transfer( writeData, 2*sizeof( uint8_t ) );
+    SPI.transfer( rxWriteData, 2*sizeof( uint8_t ) );
     sx1280Deselect();
-    free( writeData );
-    writeData = NULL;
+    zeroingAnArray( rxWriteData, /* Reassigning all array values to 0 */
+                    258 );
 
     while( digitalRead( sx1280BusyPin ) == 1 ){
         delay( 10 );
-        Serial.println("Busy after rx SETSTANDBY");
+        Serial.println(F("Busy after rx SETSTANDBY"));
     }
 }

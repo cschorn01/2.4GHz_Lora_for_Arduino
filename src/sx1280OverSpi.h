@@ -282,6 +282,10 @@ class sx1280OverSpi{
     void sx1280Select( );
     void sx1280Deselect( );
     void sx1280Reset( );
+
+    void zeroingAnArray( uint8_t arrayToZero[], 
+                         uint16_t arrayLength );
+
     void sx1280Setup( uint8_t standbyMode, 
                       uint8_t packetType, 
                       uint8_t rfFrequency2316,
