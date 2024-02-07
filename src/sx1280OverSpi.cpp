@@ -5,8 +5,6 @@
    Library Spec Link: https://arduino.github.io/arduino-cli/0.34/library-specification/
 */
 
-#include "Arduino.h"
-#include <SPI.h>
 #include "sx1280OverSpi.h"
 
 sx1280OverSpi::sx1280OverSpi( uint8_t cssPin,   
