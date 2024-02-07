@@ -6,7 +6,7 @@
 */
 
 #include "Arduino.h"
-#include "SPI.h"
+#include <SPI.h>
 #include "sx1280OverSpi.h"
 
 sx1280OverSpi::sx1280OverSpi( uint8_t cssPin,   
