@@ -54,9 +54,8 @@ There are two examples to aid in a more thorough understanding. The first is for
 
 ## ![Issues](https://img.shields.io/badge/issues-FFFFFF?style=for-the-badge)
 
-<!-- ![Error](https://img.shields.io/badge/Error-A31B34?style=for-the-badge) `arm-none-eabi-gcc: fatal error: cannot read spec file 'nosys.specs': No such file or directory`
-
-![Solution](https://img.shields.io/badge/Solution-5CBA5B?style=for-the-badge) Go to `/usr/bin/local/` delete all files beginning in `arm-none-eabi-` then reinstall the arm toolchain. -->
+ - ![Error](https://img.shields.io/badge/Error-A31B34?style=for-the-badge) `Failed to install library: 'sx1280OverSpi:1.1.0'. No valid dependencies solution found: dependency 'SPI' is not available`
+  - ![Solution](https://img.shields.io/badge/Solution-5CBA5B?style=for-the-badge) Deleted the "depends" line from the library.properties file
 
 
 <div align="center" dir="auto">
