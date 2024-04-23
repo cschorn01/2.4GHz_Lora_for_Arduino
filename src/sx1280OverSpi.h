@@ -6,7 +6,6 @@
 #define SX1280OVERSPI_H
 
 #include "Arduino.h"
-#include <SPI.h>
 
 
 /* -------------- Defining SX1280 Opcodes with Hexadecimel Commands ------------------ */

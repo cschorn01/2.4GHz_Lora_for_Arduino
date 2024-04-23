@@ -5,6 +5,8 @@
    Library Spec Link: https://arduino.github.io/arduino-cli/0.34/library-specification/
 */
 
+#include "Arduino.h"
+#include "SPI.h"
 #include "sx1280OverSpi.h"
 
 sx1280OverSpi::sx1280OverSpi( uint8_t cssPin,   
@@ -170,7 +172,6 @@ void sx1280OverSpi::sx1280Setup( uint8_t standbyMode,
         sx1280Deselect();
         zeroingAnArray( setupWriteData, /* Reassigning all array values to 0 */
                         10 );
-
     }
     /* 0x37 Must be written to register 0x0925 for SF7 or SF8 */
     else if( spreadingFactor == 0x70 || spreadingFactor == 0x80 ){
@@ -292,7 +293,7 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
                               uint8_t txPeriodBaseCount158, 
                               uint8_t txPeriodBaseCount70 ){
 
-    uint8_t txWriteData[ 258 ] = { 0 }; /* Size is 258 cause message buffer + opcode + offset */
+    uint8_t txWriteData[ 259 ] = { 0 }; /* Size is 258 cause message buffer + opcode + offset */
     uint16_t txPayloadLength = 0;
 
     /* Iterators */
@@ -318,10 +319,13 @@ void sx1280OverSpi::sx1280Tx( uint8_t power,
     while( *( outboundMessage + txPayloadLength ) != 0x00 ){
 
         /* Getting size of a single outbound message, storing it in a holder variable */
+        txPayloadLength = txPayloadLength + 1;
+
         if( txPayloadLength > 255 ){
             txPayloadLength = 255;
+            *( outboundMessage + txPayloadLength ) = 0x00;
+
         }
-        txPayloadLength = txPayloadLength + 1;
     }
     /* Allocating txPayloadLength+3 bytes to writeData, payloadLength is indexed from zero
             and space is needed for the WRITEBUFFER command and nop
@@ -512,7 +516,7 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
         Serial.println(F("Busy after SETRX"));
     }
 
-    /* Loop pollingi 25 times over rx mode
+    /* Loop polling 25 times over rx mode
        Each loop has a 50 millisecond delay allowing other tasks to run */
     for( i = 0; i <= 25; i++ ){ 
 
@@ -539,8 +543,6 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
                 delay( 10 );
                 Serial.println(F("Busy after rx GETIRQSTATUS"));
             }
-
-            /* see what the message is and decide what to do with it */
 
             /* using GETPACKETSTATUS which returns rssiSync, and Signal to Noise Ratio ( SNR )
                Not currently using but it's in sx1280 Documentation for Rx operation
@@ -610,16 +612,17 @@ void sx1280OverSpi::sx1280Rx( uint8_t rxIrq158,
             /* Looping through rxWriteData to add nops, i begins at *( rxWriteData + 3 ) */
             /* Serial.print("Final Address = 0x"); 
             Serial.println( *( rxWriteData + sizeOfMessageInBuffer + 3 ), HEX ); */
-            for( j = 0; j <= sizeOfMessageInBuffer; j++){
-                *( rxWriteData + j + 3 ) = 0x00;
-                /* Serial.print("rxWriteData + j = 0x j =  ", ( rxWriteData + j + 3 ), j ); */
+            for( j = 3; j <= sizeOfMessageInBuffer; j++){
+                *( rxWriteData + j ) = 0x00;
+                /* Serial.print("rxWriteData + j = 0x j =  ", ( rxWriteData + j ), j ); */
             }
             sx1280Select();
-            SPI.transfer( rxWriteData, ( sizeOfMessageInBuffer + 3 )*sizeof( uint8_t));
+            SPI.transfer( rxWriteData, ( sizeOfMessageInBuffer + 3 )*sizeof( uint8_t ) );
             sx1280Deselect();
+
             /* Passing newly received message pointer to vSx1280Task */
             for( j = 0; j <= sizeOfMessageInBuffer; j++ ){
-                inboundMessage[ j ] = *( rxWriteData + j );
+                inboundMessage[ j ] = *( rxWriteData + j + 3 );
             }
             zeroingAnArray( rxWriteData, /* Reassigning all array values to 0 */
                             258 );

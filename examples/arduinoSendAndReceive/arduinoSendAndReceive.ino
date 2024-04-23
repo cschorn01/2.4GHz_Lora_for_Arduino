@@ -61,26 +61,29 @@ void loop() {
                           0x00,          /* uint8_t headerType               */
                           0x20,          /* uint8_t cyclicalRedundancyCheck  */
                           0x40,          /* uint8_t chirpInvert              */
-                          sx1280Data );   /* uint8_t outboundMessage[ ]      */
+                          sx1280Data );  /* uint8_t outboundMessage[ ]      */
 
     sx1280_1.sx1280Rx( 0x40,         /* uint8_t rxIrq158                 */
                        0x7E,         /* uint8_t rxIrq70                  */
                        0x02,         /* uint8_t rxPeriodBase             */
                        0xFF,         /* uint8_t rxPeriodBaseCount[15:8]  */
                        0xFF,         /* uint8_t rxPeriodBaseCount[7:0]   */
-                       sx1280Data );   /* uint8_t inboundMessage[ ]      */
+                       sx1280Data ); /* uint8_t inboundMessage[ ]      */
 
     /* Checking message for "hi", "h"=0x68 & "i"=0x69, in hexadecimal ascii in the first three bytes */
-    if( sx1280Data[ 0 ] == 0x68 && sx1280Data[ 1 ] == 0x69 ){
-
-        for( uint32_t i = 0; i <= 2; i++ ){
-            Serial.print( "Inbound Message: 0x");
-            Serial.println( sx1280Data[ i ], HEX );
-        }
-
+    if( sx1280Data[ 0 ] == 0xFF && sx1280Data[ 1 ] == 0xFF &&sx1280Data[ 253 ] == 0xFF ){
+            Serial.println("No Inbound Message");
     }
-    else if( sx1280Data[ 0 ] == 0xFF ){
-        Serial.println("No Inbound Message");
+    else{
+        for( i = 0; i < 255; i++ ){
+            Serial.print( "Inbound Message: 0x");
+            Serial.print( sx1280Data[ i ], HEX );
+
+            /* Uncomment to shorten printed message */
+            /* if( (sx1280Data[ i ] == 0xFF && sx1280Data[ i - 1 ] == 0xFF && sx1280Data[ i + 1 ] == 0xFF ) || sx1280Data[ i ] == 0x00 ){
+                break;
+            } */
+        }
     }
 
     sx1280Data[ 0 ] = 0x68;  /* "h"          */
@@ -102,7 +105,7 @@ void loop() {
                           0x00,          /* uint8_t headerType               */
                           0x20,          /* uint8_t cyclicalRedundancyCheck  */
                           0x40,          /* uint8_t chirpInvert              */
-                          sx1280Data );   /* uint8_t outboundMessage[ ]      */
+                          sx1280Data );  /* uint8_t outboundMessage[ ]      */
 
     sx1280_1.sx1280Tx( 0x1F,         /* uint8_t power                    */
                        0xE0,         /* uint8_t rampTime                 */
