@@ -17,7 +17,11 @@
 [![Issues](https://img.shields.io/badge/issues-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#-4)
 
 <!-- ![DLP-RFS1280 Arduino Shield](https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg "Buy on Tindie") -->
-<a href="https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg"> <img src="https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg" alt="DLP-RFS1280 Arduino Shield" width="45%" height="auto" title="Buy on Tindie"> </a>
+<div>
+  <a href="https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg">
+    <img src="https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg" alt="DLP-RFS1280 Arduino Shield" width="45%" height="auto" title="Buy on Tindie">
+  </a>
+</div>
 
 <!-- [![Stargazers repo roster for @cschorn01/4GHz_Lora_for_Arduino](https://reporoster.com/stars/cschorn01/2.4GHz_Lora_for_Arduino)](https://github.com/cschorn01/4GHz_Lora_for_Arduino/stargazers) -->
 
