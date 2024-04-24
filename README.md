@@ -16,7 +16,7 @@
 [![How to Use](https://img.shields.io/badge/how_to_use-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#-3)
 [![Issues](https://img.shields.io/badge/issues-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#-4)
 
-[![DLP-RFS1280 Arduino Shield](https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg "Buy on Tindie")](https://www.tindie.com/products/olivetreelabs/24ghz-lora-arduino-shield/)
+[![DLP-RFS1280 Arduino Shield](https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg)](https://www.tindie.com/products/olivetreelabs/24ghz-lora-arduino-shield/ "Buy on Tindie")
 
 <!-- div>
   <a href="https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg">
