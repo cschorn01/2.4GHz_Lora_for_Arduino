@@ -7,7 +7,7 @@
 [![Arduino](https://img.shields.io/badge/-Arduino-00979D?style=for-the-badge&logo=Arduino&logoColor=white)](https://www.arduino.cc/)
 [![Semtech LoRa](https://img.shields.io/badge/LoRa-1CAEED?style=for-the-badge)](https://www.semtech.com/lora)
 [![DLP Design](https://img.shields.io/badge/DLP_Design-0D6696?style=for-the-badge)](https://www.dlpdesign.com/rf/rfs1280.php)
-[![Tindie](https://img.shields.io/badge/Tindie-113C77?style=for-the-badge)](https://www.tindie.com/products/olivetreelabs/24ghz-lora-arduino-shield/)
+[![Tindie](https://img.shields.io/badge/tindie-113C77?style=for-the-badge)](https://www.tindie.com/products/olivetreelabs/24ghz-lora-arduino-shield/)
 
 
 [![Description](https://img.shields.io/badge/Description-FFFFFF?style=for-the-badge)](https://github.com/cschorn01/2.4GHz_Lora_for_Arduino/tree/main#)
