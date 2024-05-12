@@ -19,7 +19,7 @@
 <!-- [![DLP-RFS1280 Arduino Shield](https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg)](https://www.tindie.com/products/olivetreelabs/24ghz-lora-arduino-shield/ "Buy on Tindie") -->
 
 
-<a href="https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg" target="_blank">
+<a href="https://www.tindie.com/products/olivetreelabs/24ghz-lora-arduino-shield/" target="_blank">
   <img src="https://github.com/cschorn01/images/blob/main/Olive%20Tree%20Labs/IMG_0547.jpg" alt="DLP-RFS1280 Arduino Shield" width="45%" height="auto" title="Buy on Tindie">
 </a>
 
