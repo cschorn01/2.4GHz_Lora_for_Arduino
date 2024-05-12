@@ -62,9 +62,18 @@ The Arduino LoRa Shield is a versatile add-on board for Arduino compatible micro
 
 ## ![How to Use](https://img.shields.io/badge/how_to_use-FFFFFF?style=for-the-badge)
 
-Each of the functions contain print outs for the serial monitor. In `sx1280Setup` you will only see the busy status of the sx1280. `sx1280Rx` prints its *Listening* loop iteration, then breaks and fills the arrays passed in with any received message data. If there was any message data received then it is printed in `void loop`.  `sx1280Tx` prints the IRQ, which if it equals `0x01` the message is sent and the function is exited. If you want to input your own messages you can change the lines which fill the writeData array with 'hi', to input over the serial monitor, which will be added in the examples soon.
+<!-- Each of the functions contain print outs for the serial monitor. In `sx1280Setup` you will only see the busy status of the sx1280. `sx1280Rx` prints its *Listening* loop iteration, then breaks and fills the arrays passed in with any received message data. If there was any message data received then it is printed in `void loop`.  `sx1280Tx` prints the IRQ, which if it equals `0x01` the message is sent and the function is exited. If you want to input your own messages you can change the lines which fill the writeData array with 'hi', to input over the serial monitor, which will be added in the examples soon.
 
-There are two examples to aid in a more thorough understanding. The first is for using an Arduino Uno and the second a Raspberry Pi Pico. In each example an sx1280 module called the [DLP-RFS1280](https://www.dlpdesign.com/rf/rfs1280.php) is used. This module has a built in antenna so there is no need to purchase one. I will soon be coming out with an arduino shield for this product to make it even easier to use.
+There are two examples to aid in a more thorough understanding. The first is for using an Arduino Uno and the second a Raspberry Pi Pico. In each example an sx1280 module called the [DLP-RFS1280](https://www.dlpdesign.com/rf/rfs1280.php) is used. This module has a built in antenna so there is no need to purchase one. I will soon be coming out with an arduino shield for this product to make it even easier to use. -->
+
+1. **Hardware Setup**: Mount the Arduino LoRa Shield onto your Arduino compatible microcontroller. Ensure proper connection of power and communication pins between the shield and the microcontroller.
+2. **Software Installation**: Download and install the "2.4GHz Lora for Arduino" Arduino library from the Library manager in the Arduino IDE. Open the included example in your Arduino IDE by navigating to File > Examples > sx1280OverSpi > arduinoSendAndReceive, then selecting the downloaded library file.
+3. **Initialization**: Include the "2.4GHz Lora for Arduino" library in your Arduino sketch using #include <sx1280overspi>. Initialize the LoRa module with appropriate settings such as frequency, spreading factor, and transmission power.
+4. **Sending Data**: Use the provided functions in the library to transmit data over the LoRa network. Format your data appropriately and call the transmission function with the desired payload.
+5. **Receiving Data**: Implement a receiving routine in your Arduino sketch to listen for incoming data packets. Parse the received data and process it according to your application requirements.
+6. **Example Sketches**: Explore the example sketches provided with the library to understand basic usage and functionality. Modify and extend these sketches to suit your specific project needs.
+7. **Troubleshooting**: Refer to the troubleshooting section in the library documentation for common issues and solutions. Ensure proper antenna connection and signal strength for optimal performance.
+8. **Resources**: Refer to the datasheets and documentation provided for the LoRa module and Arduino LoRa Shield for detailed technical information. Join online communities and forums to seek assistance and share experiences with fellow users.
 
 ## ![Issues](https://img.shields.io/badge/issues-FFFFFF?style=for-the-badge)
 
