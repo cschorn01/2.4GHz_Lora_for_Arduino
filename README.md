@@ -75,7 +75,6 @@ There are two examples to aid in a more thorough understanding. The first is for
 5. **Receiving Data**: Implement a receiving routine in your Arduino sketch to listen for incoming data packets. Parse the received data and process it according to your application requirements.
 6. **Example Sketches**: Explore the example sketches provided with the library to understand basic usage and functionality. Modify and extend these sketches to suit your specific project needs.
 7. **Troubleshooting**: Refer to the troubleshooting section in the library documentation for common issues and solutions. Ensure proper antenna connection and signal strength for optimal performance.
-8. **Resources**: Refer to the datasheets and documentation provided for the LoRa module and Arduino LoRa Shield for detailed technical information. Join online communities and forums to seek assistance and share experiences with fellow users.
 
 ## ![Issues](https://img.shields.io/badge/issues-FFFFFF?style=for-the-badge)
 
