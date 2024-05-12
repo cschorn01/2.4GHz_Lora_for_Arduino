@@ -37,6 +37,8 @@
 
 The Arduino LoRa Shield is a versatile add-on board for Arduino compatible microcontrollers, designed to enable long-range wireless communication using the LoRa modulation technique. This shield incorporates a 2.4GHz LoRa module, providing reliable connectivity over extended distances while consuming minimal power. Coupled with the LoRa PHY Arduino library, users can seamlessly integrate the shield into their projects and leverage its capabilities for various applications, including remote sensing, telemetry, and IoT (Internet of Things) deployments.
 
+Additionally, the LoRa PHY Arduino library simplifies the process of learning LoRa technology, offering a user-friendly interface and comprehensive documentation. With easy-to-understand functions and example sketches, beginners can quickly grasp the fundamentals of LoRa communication, while advanced users can delve into more complex applications with confidence. This combination of hardware and software makes the Arduino LoRa Shield an excellent educational tool for teaching and learning LoRa technology.
+
 ## ![Functionality](https://img.shields.io/badge/Functionality-FFFFFF?style=for-the-badge)
 
 <!-- Three functions are made available to use:
